@@ -10,7 +10,7 @@
     "preview": "smp view dist/comapeo-fallback-map.smp"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gregor MacLennan",
   "license": "MIT",
   "files": [
     "dist"
@@ -20,5 +20,13 @@
     "mkdirp": "^3.0.1",
     "rimraf": "^5.0.10",
     "styled-map-package": "^1.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digidem/comapeo-fallback-smp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/digidem/comapeo-fallback-smp/issues"
+  },
+  "homepage": "https://github.com/digidem/comapeo-fallback-smp#readme"
 }
