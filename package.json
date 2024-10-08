@@ -16,11 +16,9 @@
     "dist"
   ],
   "devDependencies": {
+    "mapeo-offline-map": "^3.0.0",
     "mkdirp": "^3.0.1",
-    "rimraf": "^6.0.1",
+    "rimraf": "^5.0.10",
     "styled-map-package": "^1.0.1"
-  },
-  "dependencies": {
-    "mapeo-offline-map": "file:mapeo-offline-map-3.0.0.tgz"
   }
 }
