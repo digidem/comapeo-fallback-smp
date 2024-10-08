@@ -1,8 +1,8 @@
 {
-  "name": "comapeo-fallback-smp",
+  "name": "@comapeo/fallback-smp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/comapeo-fallback-map.smp",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "dist"
   ],
