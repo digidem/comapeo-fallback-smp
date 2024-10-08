@@ -1,7 +1,7 @@
 {
   "name": "@comapeo/fallback-smp",
   "version": "1.0.0",
-  "description": "",
+  "description": "Offline fallback map for Comapeo as a styled map package",
   "main": "dist/comapeo-fallback-map.smp",
   "type": "module",
   "scripts": {
