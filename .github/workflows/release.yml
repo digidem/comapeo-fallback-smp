@@ -1,0 +1,81 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: "The semver to use"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+          - prerelease
+          - prepatch
+          - preminor
+          - premajor
+  pull_request:
+    types: [closed]
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.user.login == 'optic-release-automation[bot]'
+        && startsWith(github.event.pull_request.title, '[OPTIC-RELEASE-AUTOMATION]')
+        && (!github.event.pull_request.merged
+          || github.event.pull_request.base.ref == 'main'
+          || contains(github.event.pull_request.head.ref, '-pre.')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: nearform-actions/optic-release-automation-action@9e3518763346efacba15d729d0faaa4cbd8fdd52 # v4.12.3
+        with:
+          commit-message: "Release {version}"
+          sync-semver-tags: false
+          access: "public"
+          prerelease-prefix: "pre"
+          semver: ${{ github.event.inputs.semver }}
+          npm-tag: ${{ startsWith(github.event.inputs.semver, 'pre') && 'pre' || 'latest' }}
+          notify-linked-issues: false
+          publish-mode: oidc
+          build-command: |
+            npm ci
+
+  # On a successful publish, tell downstream repos to fast-track the bump of this
+  # package, rather than waiting for their daily Dependabot run. Receiver:
+  # digidem/comapeo-core-react-native.
+  notify-downstream:
+    needs: release
+    if: >-
+      needs.release.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        downstream:
+          - owner: digidem
+            repo: comapeo-core-react-native
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: token
+        with:
+          app-id: ${{ vars.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+          owner: ${{ matrix.downstream.owner }}
+          repositories: ${{ matrix.downstream.repo }}
+      - env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: |
+          gh api repos/${{ matrix.downstream.owner }}/${{ matrix.downstream.repo }}/dispatches \
+            -f event_type=first-party-release \
+            -f 'client_payload[package]=@comapeo/fallback-smp'
